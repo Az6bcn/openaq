@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Service;
+using Service.Implementation;
+using Service.Interfaces;
 
 namespace TechTask
 {
@@ -21,7 +23,9 @@ namespace TechTask
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IOpenaqDataService, OpenaqDataService>();
             services.AddHttpClient<OpenaqService>();
+            services.AddMemoryCache();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

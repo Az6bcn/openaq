@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Model;
+using Model.DTOs;
 using Service;
 using Service.Interfaces;
 
@@ -23,26 +24,44 @@ namespace TechTask.Controllers
         {
             _logger = logger;
             _dataService = dataService;
+
+            // initiliase data:
+            _dataService.Initialise();
         }
 
 
-
-        [HttpGet]
+        [HttpGet("countries")]
         [ProducesResponseType(typeof(IEnumerable<Country>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetCountries()
         {
             var countries = await _dataService.GetCountries();
 
-            if (countries.Any())
+            return Ok(countries);
+        }
+
+        [HttpGet("countries-cities-locations")]
+        [ProducesResponseType(typeof(IEnumerable<CountriesAndCitiesDTO>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetCountriesAndCities()
+        {
+            var response = await _dataService.GetCountriesAndCities();
+
+            return Ok(response);
+        }
+
+        [HttpGet("city/{cityCode}/location/{locationName}/measurements")]
+        [ProducesResponseType(typeof(IEnumerable<LocationMeasurementsDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetMeasurementsForLocation(string cityCode, string locationName)
+        {
+
+            if(string.IsNullOrWhiteSpace(cityCode) || string.IsNullOrWhiteSpace(locationName))
             {
-                return Ok(countries);
+                return BadRequest();
             }
 
-            else
-            {
-                return NoContent();
-            }
+            var response = await _dataService.GetCountriesAndCities();
+
+            return Ok(response);
         }
     }
 }

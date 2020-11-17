@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Model;
+using Model.DTOs;
+using Model.DTOs.ExternalApiResponseDTO;
+using Newtonsoft.Json;
 
 namespace Service
 {
@@ -28,32 +32,34 @@ namespace Service
                 var response = await _client.GetAsync("countries/?limit=2000");
                 response.EnsureSuccessStatusCode();
 
-                using var responseStream = await response.Content.ReadAsStreamAsync();
-                var countries = await JsonSerializer.DeserializeAsync<IEnumerable<Country>>(responseStream);
-                return countries;
+                var responseStream = await response.Content.ReadAsStringAsync();
+              
+                var result = JsonConvert.DeserializeObject<CountriesExternalAPIResponseDTO>(responseStream);
+
+                return result.Results;
             }
             catch (HttpRequestException ex)
             {
-                _logger.LogError($"Something went wrong getting countries");
+                _logger.LogError($"Something went wrong getting countries {ex.Message}");
                 return new List<Country>();
             }
         }
 
-        public async Task<IEnumerable<CitiesInPlatform>> GetCities()
+        public async Task<IEnumerable<City>> GetCities()
         {
             try
             {
                 var response = await _client.GetAsync("cities/?limit=2000");
                 response.EnsureSuccessStatusCode();
 
-                using var responseStream = await response.Content.ReadAsStreamAsync();
-                var cities = await JsonSerializer.DeserializeAsync<IEnumerable<CitiesInPlatform>>(responseStream);
-                return cities;
+                var responseString = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<CitiesExternalAPIResponseDTO>(responseString);
+                return result.Results ;
             }
             catch (HttpRequestException ex)
             {
-                _logger.LogError($"Something went wrong getting cities");
-                return new List<CitiesInPlatform>();
+                _logger.LogError($"Something went wrong getting cities {ex.Message}");
+                return new List<City>();
             }
         }
 
@@ -64,13 +70,13 @@ namespace Service
                 var response = await _client.GetAsync("locations/?limit=2000");
                 response.EnsureSuccessStatusCode();
 
-                using var responseStream = await response.Content.ReadAsStreamAsync();
-                var measurementLocations = await JsonSerializer.DeserializeAsync<IEnumerable<MeasurementLocation>>(responseStream);
-                return measurementLocations;
+                var responseString = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<MeasurementsExternalAPIResponseDTO>(responseString);
+                return result.Results;
             }
             catch (HttpRequestException ex)
             {
-                _logger.LogError($"Something went wrong getting measurements locations");
+                _logger.LogError($"Something went wrong getting measurements locations {ex.Message}");
                 return new List<MeasurementLocation>();
             }
         }
@@ -82,8 +88,8 @@ namespace Service
                 var response = await _client.GetAsync($"locations/{id}?limit=2000");
                 response.EnsureSuccessStatusCode();
 
-                using var responseStream = await response.Content.ReadAsStreamAsync();
-                var locationData = await JsonSerializer.DeserializeAsync<IEnumerable<LocationMeasurement>>(responseStream);
+                var responseStream = await response.Content.ReadAsStringAsync();
+                var locationData = JsonConvert.DeserializeObject<IEnumerable<LocationMeasurement>>(responseStream);
                 return locationData;
             }
             catch (HttpRequestException ex)
