@@ -10,4 +10,19 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="Model\Model.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="Business\Business.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+      <ReferenceSourceTarget></ReferenceSourceTarget>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ExternalService\" />
+    <Folder Include="Service\" />
+    <Folder Include="Service\Implementation\" />
+    <Folder Include="Service\Interfaces\" />
+  </ItemGroup>
 </Project>
