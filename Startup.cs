@@ -26,6 +26,7 @@ namespace TechTask
             services.AddScoped<IOpenaqDataService, OpenaqDataService>();
             services.AddHttpClient<OpenaqService>();
             services.AddMemoryCache();
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
